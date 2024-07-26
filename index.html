@@ -6,94 +6,171 @@
     <title>Car Price Prediction</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            background-image: url("/Users/safwan/test2/82459848_9882171.jpg");
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
         .container {
             max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ddd;
+            width: 100%;
+            background: rgba(192, 171, 171, 0.818);
             border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background: #fff;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #20ce43;
+            outline: none;
         }
         .form-group label {
-            display: block;
-            margin-bottom: 5px;
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            font-size: 16px;
+            color: #666;
+            transition: top 0.3s ease, font-size 0.3s ease;
         }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
+        .form-group input:focus + label,
+        .form-group input:not(:placeholder-shown) + label {
+            top: -12px;
+            font-size: 18px;
+            color: #007bff;
         }
         .form-group button {
-            padding: 10px 15px;
+            padding: 12px 20px;
             background-color: #007bff;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
         .form-group button:hover {
-            background-color: #0056b3;
+            background-color: #5cd04b;
+        }
+        .form-group button:active {
+            transform: scale(0.98);
         }
         .result {
             margin-top: 20px;
             font-size: 1.2em;
+            color: #333;
+        }
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-top: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Car Price Prediction</h1>
-        <form method="post">
+        <form id="car-form">
             <div class="form-group">
+                <input type="text" id="make" name="make" placeholder=" " required>
                 <label for="make">Make:</label>
-                <input type="text" id="make" name="make" required>
             </div>
             <div class="form-group">
+                <input type="text" id="fuel" name="fuel" placeholder=" " required>
                 <label for="fuel">Fuel:</label>
-                <input type="text" id="fuel" name="fuel" required>
             </div>
             <div class="form-group">
+                <input type="text" id="doors" name="doors" placeholder=" " required>
                 <label for="doors">Doors:</label>
-                <input type="text" id="doors" name="doors" required>
             </div>
             <div class="form-group">
+                <input type="text" id="body" name="body" placeholder=" " required>
                 <label for="body">Body:</label>
-                <input type="text" id="body" name="body" required>
             </div>
             <div class="form-group">
+                <input type="text" id="drive" name="drive" placeholder=" " required>
                 <label for="drive">Drive:</label>
-                <input type="text" id="drive" name="drive" required>
             </div>
             <div class="form-group">
+                <input type="number" id="weight" name="weight" step="any" placeholder=" " required>
                 <label for="weight">Weight:</label>
-                <input type="number" id="weight" name="weight" step="any" required>
             </div>
             <div class="form-group">
+                <input type="number" id="engine_size" name="engine_size" step="any" placeholder=" " required>
                 <label for="engine_size">Engine Size:</label>
-                <input type="number" id="engine_size" name="engine_size" step="any" required>
             </div>
             <div class="form-group">
+                <input type="number" id="bhp" name="bhp" step="any" placeholder=" " required>
                 <label for="bhp">BHP:</label>
-                <input type="number" id="bhp" name="bhp" step="any" required>
             </div>
             <div class="form-group">
+                <input type="number" id="mpg" name="mpg" step="any" placeholder=" " required>
                 <label for="mpg">MPG:</label>
-                <input type="number" id="mpg" name="mpg" step="any" required>
             </div>
             <div class="form-group">
                 <button type="submit">Predict Price</button>
+                <div class="loading-spinner" id="spinner"></div>
             </div>
         </form>
-        {% if prediction %}
-        <div class="result">
-            <h2>Predicted Car Price: {{ prediction }}</h2>
+        <div class="result" id="result">
+            <!-- Prediction result will appear here -->
         </div>
-        {% endif %}
     </div>
+
+    <script>
+        document.getElementById('car-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Show spinner
+            document.getElementById('spinner').style.display = 'inline-block';
+            
+            // Simulate form submission
+            setTimeout(() => {
+                // Hide spinner
+                document.getElementById('spinner').style.display = 'none';
+                
+                // Display result
+                document.getElementById('result').innerHTML = '<h2>Predicted Car Price: $12,345</h2>';
+            }, 2000);
+        });
+    </script>
 </body>
 </html>
